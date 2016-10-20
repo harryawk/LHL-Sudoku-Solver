@@ -1,5 +1,9 @@
 #include "stdio.h"
-
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <stdlib.h>
+using namespace std;
 
 int InBlock[81], InRow[81], InCol[81];
 
@@ -92,6 +96,26 @@ void ConsoleInput()
      PrintArray();
 }
 
+void FileInput()
+{  
+  char InputString[80];
+  ifstream myfile;
+  string name;
+  string x;
+
+  cout << "input the file name (include the extension, e.g. input.txt) : ";
+  cin >> name;
+  myfile.open(name, ios::in);
+  for (int i = 0; i < 9; i++) {
+    for (int j = 0; j < 9; j++) {
+      myfile >> x;
+      InitEntry(i, j, stoi(x));
+    }
+  }
+  myfile.close();
+
+  PrintArray();
+}
 
 void PrintStats()
 {
@@ -192,15 +216,16 @@ void Place(int S)
 int main(int argc, char* argv[])
 {
   int i, j, Square;
+  
 
-  for (i = 0; i < 9; i++)
-    for (j = 0; j < 9; j++) {
-      Square = 9 * i + j;
-      InRow[Square] = i;
-      InCol[Square] = j;
-      InBlock[Square] = (i / 3) * 3 + ( j / 3);
+    for (i = 0; i < 9; i++) {
+      for (j = 0; j < 9; j++) {
+        Square = 9 * i + j;
+        InRow[Square] = i;
+        InCol[Square] = j;
+        InBlock[Square] = (i / 3) * 3 + ( j / 3);
+      }
     }
-
 
   for (Square = 0; Square < 81; Square++) {
         Sequence[Square] = Square;
@@ -208,10 +233,15 @@ int main(int argc, char* argv[])
         LevelCount[Square] = 0;
     }
 
+  
   for (i = 0; i < 9; i++)
     Block[i] = Row[i] = Col[i] = ONES;
 
-    ConsoleInput();
+    if (argc > 1) {
+      FileInput();
+    } else {
+      ConsoleInput();
+    }
     Place(SeqPtr);
     printf("\n\nTotal Count = %d\n", Count);
 
